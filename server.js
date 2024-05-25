@@ -5,6 +5,9 @@ app.use(express.json());
 // dotenv
 require("dotenv").config();
 const PORT = process.env.PORT || 3000;
+//Cors
+const cors = require("cors");
+app.use(cors());
 //JWT
 const jwt = require("jsonwebtoken");
 //Require routes
