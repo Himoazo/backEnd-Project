@@ -40,7 +40,7 @@ app.get("/api/", async(req, res)=>{
     }
 });
 //Orders
-app.get("/api/orders", async(req, res)=>{
+app.get("/api/orders", authenticatetoken, async(req, res)=>{
     try{
         let orders = await order.find({});
         
@@ -50,7 +50,7 @@ app.get("/api/orders", async(req, res)=>{
     }
 });
 //GET Order by ID
-app.get("/api/orders/:id", async (req, res) => {
+app.get("/api/orders/:id", authenticatetoken, async (req, res) => {
     let id = req.params.id;
     try {
         let orderById = await order.findById(id);
