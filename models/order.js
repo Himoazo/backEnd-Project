@@ -19,6 +19,10 @@ const orderSchema = new mongoose.Schema({
                 type: mongoose.Schema.Types.ObjectId,
                 required: true
             },
+            itemName:{
+                type: String,
+                required: true
+            },
             itemType: {
                 type: String,
                 required: true,
