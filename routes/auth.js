@@ -19,17 +19,17 @@ mongoose.connect(process.env.uri).then(()=>{
 const User = require("../models/user");
 
 //Registrera användare
-router.post("/register", async (req, res)=>{
+router.post("/register", authTokenAndRole ,async (req, res)=>{
     try{
-        const {username, password, email} = req.body;
+        const {username, password, email, role} = req.body;
 
         //Validation
-        if(!username || !password || !email){
+        if(!username || !password || !email || !role){
             return res.status(400).json({error: "Invalid input"});
         }
 
         //Successful user registration
-        const user = new User({username, password, email});
+        const user = new User({username, password, email, role});
         await user.save();
 
         res.status(201).json({message: "User is created"});
@@ -38,6 +38,28 @@ router.post("/register", async (req, res)=>{
         console.log(error);
     }
 });
+
+//Validerar token och kontrollerar behörigheten staff/admin
+function authTokenAndRole(req, res, next){
+    
+    const authHeader = req.headers['authorization'];
+    const token = authHeader.split(' ')[1];
+    if (!token) return res.status(401).json({ error: 'Access denied' });
+    try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    if (!decoded.role) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+      if (decoded.role !== "admin") {
+        return res.status(403).json({ message: "Saknar behörighet" });
+      }
+    next();
+    } catch (error) {
+    res.status(401).json({ error: 'Invalid token!' });
+    }
+    
+}
+
 
 //logga in användare
 router.post("/login", async (req, res)=>{
@@ -61,7 +83,7 @@ router.post("/login", async (req, res)=>{
             return res.status(401).json({error: "Incorrect username/password!"});
         }else{
             //JWT
-            const payload = {username: username};
+            const payload = {username: username, role: user.role};
             const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, {expiresIn: "1h"});
         
             return res.status(200).json(token);
