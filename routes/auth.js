@@ -3,10 +3,12 @@
  */
 const express = require("express");
 const app = express();
+app.use(express.json());
 const router = express.Router();
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
+
 
 //Connect to db
 mongoose.connect(process.env.uri).then(()=>{
@@ -14,6 +16,7 @@ mongoose.connect(process.env.uri).then(()=>{
 }).catch((error)=>{
     console.error("Connecting to Mong faild" + error);
 });
+
 
 //User schema
 const User = require("../models/user");
@@ -63,6 +66,29 @@ function authTokenAndRole(req, res, next){
     }
     
 }
+
+//Hämta kontolistan
+router.get("/", authTokenAndRole, async(req, res)=>{
+    try{
+        let users = await User.find({});
+        
+        return res.json({users});
+    }catch(error){
+        return res.status(500).json(error);
+    }
+});
+
+//Delete user
+router.delete("/:id", authTokenAndRole, async(req, res)=>{
+    let id = req.params.id;
+    try{
+        let result = await User.deleteOne({_id: id});
+        
+        return res.json({result});
+    }catch(error){
+        return res.status(500).json(error);
+    }
+});
 
 
 //logga in användare
