@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 
+//Order schema
 const orderSchema = new mongoose.Schema({
     customer: {
         name: {
