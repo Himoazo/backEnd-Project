@@ -12,6 +12,7 @@ app.use(cors());
 const jwt = require("jsonwebtoken");
 //Require routes
 const authRoutes = require("./routes/auth");
+const contactRoute = require("./routes/contact");
 
 const mongoose = require("mongoose");
 
@@ -25,6 +26,7 @@ const order = require("./models/order.js");
 
 //Routing
 app.use("/api/auth", authRoutes);
+app.use("/api/contact", contactRoute);
 
 //GET request
 //Menu
